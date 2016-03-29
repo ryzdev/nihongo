@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+    <script src="angular.min.js"></script>
     <script src="app.js"></script>
 </head>
 <body ng-app="nihongo" ng-controller="nihongoController as ctrl">
 
-{{ctrl.word}}
+<table style="width:75%; margin-right: auto; margin-left: auto;">
+    <tr ng-repeat="phrase in ctrl.phrases">
+        <td>{{phrase.en}}</td>
+        <td></td>
+        <td>{{phrase.jp}}</td>
+    </tr>
+</table>
 
 </body>
 </html>
