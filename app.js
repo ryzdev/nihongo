@@ -1,4 +1,6 @@
-angular.module('nihongo', []).controller('nihongoController', function () {
+var app = angular.module('nihongo', []);
+
+app.controller('nihongoController', function () {
 
 
     var nouns = [
@@ -6,6 +8,14 @@ angular.module('nihongo', []).controller('nihongoController', function () {
         {en: 'this', jp: 'kore'},
         {en: 'that', jp: 'sore'},
         {en: 'that over there', jp: 'are'}
+    ];
+
+    var verbs = [
+        {en: {i: 'eat', he: 'eats'}, jp: 'o tabemasu'}
+    ];
+
+    var subjects = [
+        'I', 'you', 'he', 'she', 'it', 'we', 'they'
     ];
 
     var phraseData = [
@@ -16,23 +26,65 @@ angular.module('nihongo', []).controller('nihongoController', function () {
         {
             en: 'Please may I have INDEF NOUN?',
             jp: 'NOUN o kudasai'
+        },
+        {
+            en: 'SUB VERB NOUN',
+            jp: 'NOUN VERB'
         }
     ];
 
     var phrases = [];
     angular.forEach(phraseData, function (phrase) {
         angular.forEach(nouns, function (noun) {
-            phrases.push(buildPhrase(phrase, noun));
+            angular.forEach(verbs, function(verb){
+                angular.forEach(subjects, function (subject) {
+                    phrases.push(buildPhrase(phrase, subject, verb, noun));
+                });
+            })
         });
     });
     this.phrases = phrases;
 
-    function buildPhrase(phrase, noun) {
+    function buildPhrase(phrase, subject, verb, noun) {
         var builtPhrase = {};
-        builtPhrase.en = phrase.en.replace('NOUN', noun.en).replace('INDEF', noun.article ? noun.article : '');
-        builtPhrase.jp = phrase.jp.replace('NOUN', noun.jp);
+        builtPhrase.en = phrase.en
+            .replace('NOUN', noun.en)
+            .replace('INDEF', noun.article ? noun.article : '')
+            .replace('SUB', subject)
+            .replace('VERB', getVerbConjugation(subject, verb));
+
+        builtPhrase.jp = phrase.jp
+            .replace('NOUN', noun.jp)
+            .replace('VERB', verb.jp);
         return builtPhrase;
     }
 
+    function getVerbConjugation(subject, verb) {
+        if(verb.en.he && (subject === 'he' || subject === 'she' || subject === 'it')) {
+            return verb.en.he;
+        }
+        return verb.en.i;
+    }
+});
+
+app.filter('unique', function() {
+    return function(phrases) {
+        var keys = [];
+        var output = [];
+
+        angular.forEach(phrases, function(phrase) {
+            if(keys.indexOf(phrase.en) === -1) {
+                output.push(phrase);
+                keys.push(phrase.en);
+            }
+        });
+        return output;
+    };
+});
+
+app.filter('capitalise', function() {
+    return function(phrase) {
+        return phrase.slice(0,1).toUpperCase() + phrase.slice(1);
+    };
 });
 

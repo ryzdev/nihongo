@@ -9,8 +9,8 @@
 <body ng-app="nihongo" ng-controller="nihongoController as ctrl">
 
 <table style="width:75%; margin-right: auto; margin-left: auto;">
-    <tr ng-repeat="phrase in ctrl.phrases">
-        <td>{{phrase.en}}</td>
+    <tr ng-repeat="phrase in ctrl.phrases | unique">
+        <td>{{phrase.en | capitalise}}</td>
         <td></td>
         <td>{{phrase.jp}}</td>
     </tr>
