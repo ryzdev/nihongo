@@ -7,7 +7,8 @@ app.controller('nihongoController', function () {
         {en: 'ice cream', jp: 'aisu kurīmu', article: 'an'},
         {en: 'this', jp: 'kore'},
         {en: 'that', jp: 'sore'},
-        {en: 'that over there', jp: 'are'}
+        {en: 'that over there', jp: 'are'},
+        {en: 'sandwich', jp: 'sandoicchi', article: 'a', discrete: true}
     ];
 
     var verbs = [
@@ -20,11 +21,11 @@ app.controller('nihongoController', function () {
 
     var phraseData = [
         {
-            en: 'Excuse me, please may I have INDEF NOUN?',
+            en: 'Excuse me, please may I have NOUN?',
             jp: 'sumimasen NOUN o kudasai'
         },
         {
-            en: 'Please may I have INDEF NOUN?',
+            en: 'Please may I have NOUN?',
             jp: 'NOUN o kudasai'
         },
         {
@@ -48,8 +49,7 @@ app.controller('nihongoController', function () {
     function buildPhrase(phrase, subject, verb, noun) {
         var builtPhrase = {};
         builtPhrase.en = phrase.en
-            .replace('NOUN', noun.en)
-            .replace('INDEF', noun.article ? noun.article : '')
+            .replace('NOUN', getNoun(noun))
             .replace('SUB', subject)
             .replace('VERB', getVerbConjugation(subject, verb));
 
@@ -64,6 +64,13 @@ app.controller('nihongoController', function () {
             return verb.en.he;
         }
         return verb.en.i;
+    }
+
+    function getNoun(noun) {
+        if(noun.discrete) {
+            return noun.article + ' ' + noun.en;
+        }
+        return noun.en;
     }
 });
 
