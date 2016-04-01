@@ -4,11 +4,11 @@ app.controller('nihongoController', function () {
 
 
     var nouns = [
-        {en: 'ice cream', jp: 'aisu kurīmu', article: 'an'},
-        {en: 'this', jp: 'kore'},
-        {en: 'that', jp: 'sore'},
-        {en: 'that over there', jp: 'are'},
-        {en: 'sandwich', jp: 'sandoicchi', article: 'a', discrete: true}
+        {en: 'ice cream', jp: 'aisu kurīmu', article: 'irregular'},
+        {en: 'this', jp: 'kore', article: 'none'},
+        {en: 'that', jp: 'sore', article: 'none'},
+        {en: 'that over there', jp: 'are', article: 'none'},
+        {en: 'sandwich', jp: 'sandoicchi', article: 'discrete'}
     ];
 
     var verbs = [
@@ -18,6 +18,11 @@ app.controller('nihongoController', function () {
     var subjects = [
         'I', 'you', 'he', 'she', 'it', 'we', 'they'
     ];
+
+    var articles = [
+        'a', 'the'
+    ];
+
 
     var phraseData = [
         {
@@ -39,17 +44,19 @@ app.controller('nihongoController', function () {
         angular.forEach(nouns, function (noun) {
             angular.forEach(verbs, function(verb){
                 angular.forEach(subjects, function (subject) {
-                    phrases.push(buildPhrase(phrase, subject, verb, noun));
+                    angular.forEach(articles, function(article){
+                        phrases.push(buildPhrase(phrase, subject, verb, article, noun));
+                    });
                 });
             })
         });
     });
     this.phrases = phrases;
 
-    function buildPhrase(phrase, subject, verb, noun) {
+    function buildPhrase(phrase, subject, verb, article, noun) {
         var builtPhrase = {};
         builtPhrase.en = phrase.en
-            .replace('NOUN', getNoun(noun))
+            .replace('NOUN', getArticleAndNoun(article, noun))
             .replace('SUB', subject)
             .replace('VERB', getVerbConjugation(subject, verb));
 
@@ -66,11 +73,14 @@ app.controller('nihongoController', function () {
         return verb.en.i;
     }
 
-    function getNoun(noun) {
-        if(noun.discrete) {
-            return noun.article + ' ' + noun.en;
+    function getArticleAndNoun(article, noun) {
+        if(noun.article === 'none') {
+            return noun.en;
         }
-        return noun.en;
+        if(noun.article === 'irregular' && article === 'a') {
+            return 'an ' + noun.en;
+        }
+        return article + ' ' + noun.en;
     }
 });
 
@@ -95,3 +105,5 @@ app.filter('capitalise', function() {
     };
 });
 
+// todo refactor into actual solution and to remove pointless looping - should later be able to replace counters with random
+// todo don't forget you have skipped 'none' article
