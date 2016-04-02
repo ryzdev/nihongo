@@ -12,6 +12,10 @@ app.factory('dataFactory', function () {
         {
             en: 'SUB VERB NOUN',
             jp: 'NOUN VERB'
+        },
+        {
+            en: 'SUB VERB NOUN',
+            jp: 'NOUN VERB'
         }
     ];
 
@@ -20,11 +24,17 @@ app.factory('dataFactory', function () {
         {en: 'this', jp: 'kore', article: 'none'},
         {en: 'that', jp: 'sore', article: 'none'},
         {en: 'that over there', jp: 'are', article: 'none'},
-        {en: 'sandwich', jp: 'sandoicchi', article: 'discrete'}
+        {en: 'sandwich', jp: 'sandoicchi', article: 'discrete'},
+        {en: 'coffee', jp: 'kōhī'},
+        {en: 'juice', jp: 'jūsu'},
+        {en: 'beer', jp: 'bīru'}
     ];
 
     var verbs = [
-        {en: {i: 'eat', he: 'eats'}, jp: 'o tabemasu'}
+        {en: {i: 'eat', he: 'eats'}, jp: 'o tabemasu'},
+        {en: {i: 'will eat'}, jp: 'o tabemasu'},
+        {en: {i: 'drink', he: 'drinks'}, jp: 'o nomimasu'},
+        {en: {i: 'will drink'}, jp: 'o nomimasu'}
     ];
 
     var subjects = [
@@ -32,7 +42,7 @@ app.factory('dataFactory', function () {
     ];
 
     var articles = [
-        'a', 'the'
+        'a', 'the', 'noArticle'
     ];
 
     return {

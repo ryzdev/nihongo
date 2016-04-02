@@ -4,15 +4,15 @@ app.controller('nihongoController', nihongoController);
 
 nihongoController.$inject = ['dataFactory'];
 
-function nihongoController(dataFactory) {
+function nihongoController(factory) {
 
     var ctrl = this;
 
-    var phraseData = dataFactory.getPhraseData();
-    var subjects = dataFactory.getSubjects();
-    var verbs = dataFactory.getVerbs();
-    var articles = dataFactory.getArticles();
-    var nouns = dataFactory.getNouns();
+    var phraseData = factory.getPhraseData();
+    var subjects = factory.getSubjects();
+    var verbs = factory.getVerbs();
+    var articles = factory.getArticles();
+    var nouns = factory.getNouns();
 
     var numberOfNewItemsRemaining = checkNewItemsRemaining();
     ctrl.phrases = [];
@@ -31,9 +31,9 @@ function nihongoController(dataFactory) {
 
         var builtPhrase = {};
         builtPhrase.en = phrase.en
-            .replace('NOUN', getArticleAndNoun(article, noun))
             .replace('SUB', subject)
-            .replace('VERB', getVerbConjugation(subject, verb));
+            .replace('VERB', getVerbConjugation(subject, verb))
+            .replace('NOUN', getArticleAndNoun(article, noun));
 
         builtPhrase.jp = phrase.jp
             .replace('NOUN', noun.jp)
@@ -48,7 +48,7 @@ function nihongoController(dataFactory) {
             phraseData.splice(randomIndex, 1);
             return phrase;
         } else {
-            return dataFactory.getPhraseData()[getRandomIndex(phraseData)];
+            return factory.getPhraseData()[getRandomIndex(phraseData)];
         }
     }
 
@@ -59,7 +59,7 @@ function nihongoController(dataFactory) {
             subjects.splice(randomIndex, 1);
             return subject;
         } else {
-            return dataFactory.getSubjects()[getRandomIndex(subjects)];
+            return factory.getSubjects()[getRandomIndex(subjects)];
         }
     }
 
@@ -70,7 +70,7 @@ function nihongoController(dataFactory) {
             verbs.splice(randomIndex, 1);
             return verb;
         } else {
-            return dataFactory.getVerbs()[getRandomIndex(verbs)];
+            return factory.getVerbs()[getRandomIndex(verbs)];
         }
     }
 
@@ -81,7 +81,7 @@ function nihongoController(dataFactory) {
             articles.splice(randomIndex, 1);
             return article;
         } else {
-            return dataFactory.getArticles()[getRandomIndex(articles)];
+            return factory.getArticles()[getRandomIndex(articles)];
         }
     }
 
@@ -92,7 +92,7 @@ function nihongoController(dataFactory) {
             nouns.splice(randomIndex, 1);
             return noun;
         } else {
-            return dataFactory.getNouns()[getRandomIndex(nouns)];
+            return factory.getNouns()[getRandomIndex(nouns)];
         }
     }
 
@@ -108,10 +108,13 @@ function nihongoController(dataFactory) {
     }
 
     function getArticleAndNoun(article, noun) {
-        if (noun.article === 'none') {
+        if (article === 'noArticle' && noun.article === 'discrete') {
+            return 'a ' + noun.en;
+        }
+        if (article === 'noArticle' || noun.article === 'none') {
             return noun.en;
         }
-        if (noun.article === 'irregular' && article === 'a') {
+        if (article === 'a' && noun.article === 'irregular') {
             return 'an ' + noun.en;
         }
         return article + ' ' + noun.en;
@@ -121,3 +124,5 @@ function nihongoController(dataFactory) {
         return phraseData.length + nouns.length + verbs.length + subjects.length + articles.length;
     }
 }
+
+//TODO PUT NOUNS IN CATEGORIES
