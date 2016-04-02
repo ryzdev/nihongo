@@ -39,16 +39,16 @@ app.factory('dataFactory', function () {
         getPhraseData: function () {
             return angular.copy(phraseData);
         },
-        getNouns : function () {
+        getNouns: function () {
             return angular.copy(nouns);
         },
-        getVerbs : function() {
+        getVerbs: function () {
             return angular.copy(verbs);
         },
-        getSubjects : function() {
+        getSubjects: function () {
             return angular.copy(subjects);
         },
-        getArticles : function() {
+        getArticles: function () {
             return angular.copy(articles);
         }
     }
