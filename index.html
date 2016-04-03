@@ -10,8 +10,10 @@
 </head>
 <body ng-app="nihongo" ng-controller="nihongoController as ctrl">
 
+<input ng-model="search">
+
 <table style="width:75%; margin-right: auto; margin-left: auto;">
-    <tr ng-repeat="phrase in ctrl.phrases | unique">
+    <tr ng-repeat="phrase in ctrl.phrases | unique | filter:search">
         <td>{{phrase.en | capitalise}}</td>
         <td></td>
         <td>{{phrase.jp}}</td>

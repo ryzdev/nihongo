@@ -9,6 +9,7 @@ function nihongoController(factory) {
     var ctrl = this;
 
     var phraseData = factory.getPhraseData();
+    var futures = factory.getFutures();
     var subjects = factory.getSubjects();
     var verbs = factory.getVerbs();
     var articles = factory.getArticles();
@@ -24,6 +25,7 @@ function nihongoController(factory) {
 
     function buildPhrase() {
         var phrase = getPhrase();
+        var future = getFuture();
         var subject = getSubject();
         var verb = getVerb();
         var article = getArticle();
@@ -31,11 +33,13 @@ function nihongoController(factory) {
 
         var builtPhrase = {};
         builtPhrase.en = phrase.en
+            .replace('FUTURE', future.en)
             .replace('SUB', subject)
-            .replace('VERB', conjugateVerb(subject, verb))
+            .replace('VERB', conjugateVerb(phrase, subject, verb))
             .replace('NOUN', chooseArticle(article, noun));
 
         builtPhrase.jp = phrase.jp
+            .replace('FUTURE', future.jp)
             .replace('NOUN', noun.jp)
             .replace('VERB', verb.jp);
         return builtPhrase;
@@ -85,11 +89,24 @@ function nihongoController(factory) {
         return Math.floor(array.length * Math.random());
     }
 
-    function conjugateVerb(subject, verb) {
-        if (verb.en.he && (subject === 'he' || subject === 'she' || subject === 'it')) {
-            return verb.en.he;
+    function conjugateVerb(phrase, subject, verb) {
+        if(phrase.en.indexOf('FUTURE') > -1 && phrase.en.future){
+            return verb.en.future;
+        }
+        if (verb.en.heshe && (subject === 'he' || subject === 'she')) {
+            return verb.en.heshe;
         }
         return verb.en.i;
+    }
+
+    function getFuture(){
+        if (futures.length == 0) {
+            return factory.getRandomFuture();
+        }
+        var randomIndex = getRandomIndex(futures);
+        var future = futures[randomIndex];
+        futures.splice(randomIndex, 1);
+        return future;
     }
 
     // NOUNS
@@ -122,23 +139,18 @@ function nihongoController(factory) {
         return noun;
     }
 
-    //function getGeneralNoun() {
-    //    if (nouns.general.length == 0) {
-    //        return factory.getNouns().general[getRandomIndex(nouns.general)];
-    //    }
-    //    var randomIndex = getRandomIndex(nouns.general);
-    //    var noun = nouns.general[randomIndex];
-    //    nouns.general.splice(randomIndex, 1);
-    //    return noun;
-    //}
-
     function chooseArticle(article, noun) {
+        //no article but noun needs one
         if (article === 'noArticle' && noun.article === 'discrete') {
             return 'a ' + noun.en;
         }
+
+        //no article or noun can't have an article
         if (article === 'noArticle' || noun.article === 'none') {
             return noun.en;
         }
+
+        //a becomes an
         if (article === 'a' && noun.article === 'irregular') {
             return 'an ' + noun.en;
         }
