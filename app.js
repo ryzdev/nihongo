@@ -27,13 +27,13 @@ function nihongoController(factory) {
         var subject = getSubject();
         var verb = getVerb();
         var article = getArticle();
-        var noun = getNoun();
+        var noun = getNoun(verb);
 
         var builtPhrase = {};
         builtPhrase.en = phrase.en
             .replace('SUB', subject)
-            .replace('VERB', getVerbConjugation(subject, verb))
-            .replace('NOUN', getArticleAndNoun(article, noun));
+            .replace('VERB', conjugateVerb(subject, verb))
+            .replace('NOUN', chooseArticle(article, noun));
 
         builtPhrase.jp = phrase.jp
             .replace('NOUN', noun.jp)
@@ -42,72 +42,97 @@ function nihongoController(factory) {
     }
 
     function getPhrase() {
-        if (phraseData.length > 0) {
-            var randomIndex = getRandomIndex(phraseData);
-            var phrase = phraseData[randomIndex];
-            phraseData.splice(randomIndex, 1);
-            return phrase;
-        } else {
-            return factory.getPhraseData()[getRandomIndex(phraseData)];
+        if (phraseData.length == 0) {
+            return factory.getRandomPhraseData();
         }
+        var randomIndex = getRandomIndex(phraseData);
+        var phrase = phraseData[randomIndex];
+        phraseData.splice(randomIndex, 1);
+        return phrase;
     }
 
     function getSubject() {
-        if (subjects.length > 0) {
-            var randomIndex = getRandomIndex(subjects);
-            var subject = subjects[randomIndex];
-            subjects.splice(randomIndex, 1);
-            return subject;
-        } else {
-            return factory.getSubjects()[getRandomIndex(subjects)];
+        if (subjects.length == 0) {
+            return factory.getRandomSubject();
         }
+        var randomIndex = getRandomIndex(subjects);
+        var subject = subjects[randomIndex];
+        subjects.splice(randomIndex, 1);
+        return subject;
     }
 
     function getVerb() {
-        if (verbs.length > 0) {
-            var randomIndex = getRandomIndex(verbs);
-            var verb = verbs[randomIndex];
-            verbs.splice(randomIndex, 1);
-            return verb;
-        } else {
-            return factory.getVerbs()[getRandomIndex(verbs)];
+        if (verbs.length == 0) {
+            return factory.getRandomVerb();
         }
+        var randomIndex = getRandomIndex(verbs);
+        var verb = verbs[randomIndex];
+        verbs.splice(randomIndex, 1);
+        return verb;
     }
 
     function getArticle() {
-        if (articles.length > 0) {
-            var randomIndex = getRandomIndex(articles);
-            var article = articles[randomIndex];
-            articles.splice(randomIndex, 1);
-            return article;
-        } else {
-            return factory.getArticles()[getRandomIndex(articles)];
+        if (articles.length == 0) {
+            return factory.getRandomArticle();
         }
+        var randomIndex = getRandomIndex(articles);
+        var article = articles[randomIndex];
+        articles.splice(randomIndex, 1);
+        return article;
     }
 
-    function getNoun() {
-        if (nouns.length > 0) {
-            var randomIndex = getRandomIndex(nouns);
-            var noun = nouns[randomIndex];
-            nouns.splice(randomIndex, 1);
-            return noun;
-        } else {
-            return factory.getNouns()[getRandomIndex(nouns)];
-        }
+    function getRandomIndex(array) {
+        return Math.floor(array.length * Math.random());
     }
 
-    function getRandomIndex(list) {
-        return Math.floor(list.length * Math.random());
-    }
-
-    function getVerbConjugation(subject, verb) {
+    function conjugateVerb(subject, verb) {
         if (verb.en.he && (subject === 'he' || subject === 'she' || subject === 'it')) {
             return verb.en.he;
         }
         return verb.en.i;
     }
 
-    function getArticleAndNoun(article, noun) {
+    // NOUNS
+    function getNoun(verb) {
+        if (verb.type === 'food') {
+            return getFoodNoun();
+        }
+        else if (verb.type === 'drink') {
+            return getDrinkNoun();
+        }
+    }
+
+    function getFoodNoun() {
+        if (nouns.food.length == 0) {
+            return factory.getRandomFoodNoun()
+        }
+        var randomIndex = getRandomIndex(nouns.food);
+        var noun = nouns.food[randomIndex];
+        nouns.food.splice(randomIndex, 1);
+        return noun;
+    }
+
+    function getDrinkNoun() {
+        if (nouns.drink.length == 0) {
+            return factory.getRandomDrinkNoun()
+        }
+        var randomIndex = getRandomIndex(nouns.drink);
+        var noun = nouns.drink[randomIndex];
+        nouns.drink.splice(randomIndex, 1);
+        return noun;
+    }
+
+    //function getGeneralNoun() {
+    //    if (nouns.general.length == 0) {
+    //        return factory.getNouns().general[getRandomIndex(nouns.general)];
+    //    }
+    //    var randomIndex = getRandomIndex(nouns.general);
+    //    var noun = nouns.general[randomIndex];
+    //    nouns.general.splice(randomIndex, 1);
+    //    return noun;
+    //}
+
+    function chooseArticle(article, noun) {
         if (article === 'noArticle' && noun.article === 'discrete') {
             return 'a ' + noun.en;
         }
@@ -120,9 +145,9 @@ function nihongoController(factory) {
         return article + ' ' + noun.en;
     }
 
+    //GENERAL
     function checkNewItemsRemaining() {
-        return phraseData.length + nouns.length + verbs.length + subjects.length + articles.length;
+        return phraseData.length + verbs.length + subjects.length + articles.length
+            + nouns.food.length + nouns.drink.length;
     }
 }
-
-//TODO PUT NOUNS IN CATEGORIES
