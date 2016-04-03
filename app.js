@@ -9,6 +9,7 @@ function nihongoController(factory) {
     var ctrl = this;
 
     var phraseData = factory.getPhraseData();
+    var generalTimes = factory.getGeneralTimes();
     var futures = factory.getFutures();
     var subjects = factory.getSubjects();
     var verbs = factory.getVerbs();
@@ -25,7 +26,16 @@ function nihongoController(factory) {
 
     function buildPhrase() {
         var phrase = getPhrase();
-        var future = getFuture();
+
+        var future = {};
+        if(phrase.en.indexOf('FUTURE') > -1) {
+            future = getFuture();
+        }
+
+        var generalTime = {};
+        if(phrase.en.indexOf('GENERAL_TIME') > -1) {
+            generalTime = getGeneralTime();
+        }
         var subject = getSubject();
         var verb = getVerb();
         var article = getArticle();
@@ -33,12 +43,14 @@ function nihongoController(factory) {
 
         var builtPhrase = {};
         builtPhrase.en = phrase.en
+            .replace('GENERAL_TIME', generalTime.en)
             .replace('FUTURE', future.en)
             .replace('SUB', subject)
             .replace('VERB', conjugateVerb(phrase, subject, verb))
             .replace('NOUN', chooseArticle(article, noun));
 
         builtPhrase.jp = phrase.jp
+            .replace('GENERAL_TIME', generalTime.jp)
             .replace('FUTURE', future.jp)
             .replace('NOUN', noun.jp)
             .replace('VERB', verb.jp);
@@ -107,6 +119,16 @@ function nihongoController(factory) {
         var future = futures[randomIndex];
         futures.splice(randomIndex, 1);
         return future;
+    }
+
+    function getGeneralTime(){
+        if (generalTimes.length == 0) {
+            return factory.getRandomGeneralTime();
+        }
+        var randomIndex = getRandomIndex(generalTimes);
+        var generalTime = generalTimes[randomIndex];
+        generalTimes.splice(randomIndex, 1);
+        return generalTime;
     }
 
     // NOUNS

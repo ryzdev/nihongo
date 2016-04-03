@@ -20,6 +20,18 @@ app.factory('dataFactory', function () {
         {
             en: 'FUTURE SUB VERB NOUN',
             jp: 'FUTURE NOUN VERB'
+        },
+        {
+            en: 'SUB VERB NOUN?',
+            jp: 'NOUN VERB ka'
+        },
+        {
+            en: 'SUB VERB NOUN?',
+            jp: 'NOUN VERB ka'
+        },
+        {
+            en: 'GENERAL_TIME SUB VERB NOUN',
+            jp: 'GENERAL_TIME NOUN VERB'
         }
     ];
 
@@ -46,14 +58,20 @@ app.factory('dataFactory', function () {
         nouns.drink.push(item);
     });
 
-    var futures = [
-        {en: 'tomorrow', jp: 'ashita'}
-    ];
+    var time = {
+        futures: [
+            {en: 'tomorrow', jp: 'ashita'}
+        ],
+        general: [
+            {en: 'sometimes', jp: 'tokidoki'},
+            {en: 'every day', jp: 'mainichi'}
+        ]
+    };
 
 
     var verbs = [
         {en: {i: 'eat', heshe: 'eats', future: 'will eat'}, jp: 'o tabemasu', type: 'food'},
-        {en: {i: 'drink', heshe: 'drinks', future: 'will drink'}, jp: 'o nomimasu', type: 'drink'},
+        {en: {i: 'drink', heshe: 'drinks', future: 'will drink'}, jp: 'o nomimasu', type: 'drink'}
     ];
 
     angular.forEach(angular.copy(verbs), function (verb) {
@@ -109,10 +127,16 @@ app.factory('dataFactory', function () {
             return articles[getRandomIndex(articles)];
         },
         getFutures: function () {
-            return angular.copy(futures);
+            return angular.copy(time.futures);
         },
         getRandomFuture: function () {
-            return futures[getRandomIndex(futures)];
+            return time.futures[getRandomIndex(time.futures)];
+        },
+        getGeneralTimes: function(){
+            return angular.copy(time.general);
+        },
+        getRandomGeneralTime: function () {
+            return time.general[getRandomIndex(time.general)];
         }
     }
 });
